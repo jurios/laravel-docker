@@ -1,0 +1,41 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+    volumes:
+      - /var/www/production/altealife/html:/var/www/html
+    networks:
+      - altealifees_network
+    depends_on:
+      - db
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    volumes:
+      - /var/www/production/altealife/html:/var/www/html
+    ports:
+      - 8082:80
+    networks:
+      - public-websites
+      - altealifees_network
+    depends_on:
+      - app
+  db:
+    image: mysql:5.7.22
+    command: --disable-partition-engine-check
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_USER: homestead
+      MYSQL_PASSWORD: secret
+      MYSQL_DATABASE: homestead
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    networks:
+      - altealifees_network
+networks:
+  altealifees_network:
+    external: true
+  public-websites:
+    external: true
